@@ -22,7 +22,7 @@ st.markdown("""
     }
     </style>
     <div class="credits">
-        Creado por Esteban Gonzalez y Joaquin Riveros
+        Creado por Esteban Gonzalez, Joaquin Riveros Y Rodny Araujo
     </div>
     """, unsafe_allow_html=True)
 
@@ -92,66 +92,61 @@ if not datos_filtrados.empty:
 
     st.pyplot(fig)
 
-# ----------- Métricas Regionales y Nacionales (debajo del gráfico) -----------
-
+ # --- Métricas del mayor y menor puntaje de Lenguaje y Matemáticas en la región ---
     datos_region = simce[simce['region'] == region_sel]
 
-    if not datos_region.empty:
-        ultimo_anio_region = datos_region['agno'].max()
-        df_region_ultimo = datos_region[datos_region['agno'] == ultimo_anio_region]
-        prom_regional = df_region_ultimo[columna_puntaje].mean()
-        prom_nacional = simce[simce['agno'] == ultimo_anio_region][columna_puntaje].mean()
+    # Mayor puntaje de Lenguaje
+    max_lenguaje_row = datos_region.loc[datos_region['lenguaje'].idxmax()]
+    max_lenguaje = max_lenguaje_row['lenguaje']
+    max_lenguaje_comuna = max_lenguaje_row['comuna']
+    max_lenguaje_agno = int(max_lenguaje_row['agno'])
 
-        # --- Máximo puntaje de la región (en todos los años) ---
-        idx_max = datos_region[columna_puntaje].idxmax()
-        max_regional = datos_region.loc[idx_max, columna_puntaje]
-        max_regional_anio = datos_region.loc[idx_max, 'agno']
-        max_regional_comuna = datos_region.loc[idx_max, 'comuna']
+    # Menor puntaje de Lenguaje
+    min_lenguaje_row = datos_region.loc[datos_region['lenguaje'].idxmin()]
+    min_lenguaje = min_lenguaje_row['lenguaje']
+    min_lenguaje_comuna = min_lenguaje_row['comuna']
+    min_lenguaje_agno = int(min_lenguaje_row['agno'])
 
-        # --- Mínimo puntaje de la región (en todos los años) ---
-        idx_min = datos_region[columna_puntaje].idxmin()
-        min_regional = datos_region.loc[idx_min, columna_puntaje]
-        min_regional_anio = datos_region.loc[idx_min, 'agno']
-        min_regional_comuna = datos_region.loc[idx_min, 'comuna']
+    # Mayor puntaje de Matemáticas
+    max_mate_row = datos_region.loc[datos_region['matematicas'].idxmax()]
+    max_mate = max_mate_row['matematicas']
+    max_mate_comuna = max_mate_row['comuna']
+    max_mate_agno = int(max_mate_row['agno'])
 
-    else:
-        ultimo_anio_region = None
-        prom_regional = None
-        prom_nacional = None
-        max_regional = None
-        max_regional_anio = None
-        max_regional_comuna = None
-        min_regional = None
-        min_regional_anio = None
-        min_regional_comuna = None
+    # Menor puntaje de Matemáticas
+    min_mate_row = datos_region.loc[datos_region['matematicas'].idxmin()]
+    min_mate = min_mate_row['matematicas']
+    min_mate_comuna = min_mate_row['comuna']
+    min_mate_agno = int(min_mate_row['agno'])
 
-    col1, col2 = st.columns(2)
+    st.markdown("---")
+    st.subheader("🏆 Mayores y Menores Puntajes Regionales por Asignatura")
+
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric(
-            label=f"Promedio Regional {region_sel.title()} ({ultimo_anio_region if ultimo_anio_region else '-'})",
-            value=f"{prom_regional:.1f}" if prom_regional is not None else "N/A"
-        )
+         st.metric(
+            label=f"MAX LENGUAJE | {max_lenguaje_comuna.title()} | {max_lenguaje_agno}",
+            value=f"{max_lenguaje:.1f}",
+            delta=(max_lenguaje_comuna)
+         )
     with col2:
-        st.metric(
-            label=f"Promedio Nacional ({ultimo_anio_region if ultimo_anio_region else '-'})",
-            value=f"{prom_nacional:.1f}" if prom_nacional is not None else "N/A"
+         st.metric(
+            label=f"MIN LENGUAJE | {min_lenguaje_comuna.title()} | {min_lenguaje_agno}",
+            value=f"{min_lenguaje:.1f}",
+            delta=(min_lenguaje_comuna)
         )
-
-    col3, col4 = st.columns(2)
     with col3:
         st.metric(
-            label=f"Máximo Puntaje Región",
-            value=f"{max_regional:.1f}" if max_regional is not None else "N/A",
-            delta=f"{max_regional_comuna} ({max_regional_anio})" if max_regional_comuna is not None else ""
+            label=f"MAX MATEMÁTICAS | {max_mate_comuna.title()} | {max_mate_agno}",
+            value=f"{max_mate:.1f}",
+            delta=(max_mate_comuna)
         )
     with col4:
         st.metric(
-            label=f"Mínimo Puntaje Región",
-            value=f"{min_regional:.1f}" if min_regional is not None else "N/A",
-            delta=f"{min_regional_comuna} ({min_regional_anio})" if min_regional_comuna is not None else ""
+            label=f"MIN MATEMÁTICAS | {min_mate_comuna.title()} | {min_mate_agno}",
+            value=f"{min_mate:.1f}",
+            delta=(min_mate_comuna)
         )
-
-    st.caption("📊 Métricas regionales y nacionales (último año disponible) más máximo y mínimo histórico de la región (muestra comuna y año).")
     
 else:
     st.warning("No hay datos para los filtros seleccionados.")
