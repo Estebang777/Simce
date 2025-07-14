@@ -91,5 +91,48 @@ if not datos_filtrados.empty:
     ax.grid(True)
 
     st.pyplot(fig)
+
+# ----------- Métricas Regionales y Nacionales (debajo del gráfico) -----------
+    datos_region = simce[simce['region'] == region_sel]
+
+    # Último año disponible en la región
+    if not datos_region.empty:
+        ultimo_anio_region = datos_region['agno'].max()
+        df_region_ultimo = datos_region[datos_region['agno'] == ultimo_anio_region]
+        prom_regional = df_region_ultimo[columna_puntaje].mean()
+        max_regional = df_region_ultimo[columna_puntaje].max()
+        min_regional = df_region_ultimo[columna_puntaje].min()
+    else:
+        ultimo_anio_region = None
+        prom_regional = None
+        max_regional = None
+        min_regional = None
+
+    # Promedio nacional para ese año y asignatura
+    prom_nacional = simce[simce['agno'] == ultimo_anio_region][columna_puntaje].mean() if ultimo_anio_region else None
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric(
+            label=f"Promedio Regional ({ultimo_anio_region if ultimo_anio_region else '-'})",
+            value=f"{prom_regional:.1f}" if prom_regional is not None else "N/A"
+        )
+    with col2:
+        st.metric(
+            label=f"Promedio Nacional ({ultimo_anio_region if ultimo_anio_region else '-'})",
+            value=f"{prom_nacional:.1f}" if prom_nacional is not None else "N/A"
+        )
+    with col3:
+        st.metric(
+            label=f"Máximo Puntaje Región ({ultimo_anio_region if ultimo_anio_region else '-'})",
+            value=f"{max_regional:.1f}" if max_regional is not None else "N/A"
+        )
+    with col4:
+        st.metric(
+            label=f"Mínimo Puntaje Región ({ultimo_anio_region if ultimo_anio_region else '-'})",
+            value=f"{min_regional:.1f}" if min_regional is not None else "N/A"
+        )
+    st.caption("📊 Métricas regionales y nacionales para el año más reciente seleccionado.")
+
 else:
     st.warning("No hay datos para los filtros seleccionados.")
