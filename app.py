@@ -92,7 +92,7 @@ if not datos_filtrados.empty:
 
     st.pyplot(fig)
 
-# ----------- Métricas Regionales y Nacionales (debajo del gráfico) -----------
+  # ----------- Métricas Regionales y Nacionales (debajo del gráfico) -----------
     datos_region = simce[simce['region'] == region_sel]
 
     # Último año disponible en la región
@@ -133,6 +133,6 @@ if not datos_filtrados.empty:
             value=f"{min_regional:.1f}" if min_regional is not None else "N/A"
         )
     st.caption("📊 Métricas regionales y nacionales para el año más reciente seleccionado.")
-
+    
 else:
     st.warning("No hay datos para los filtros seleccionados.")
